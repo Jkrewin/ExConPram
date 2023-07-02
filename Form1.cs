@@ -5,8 +5,8 @@ namespace ExConPram
 {
     public partial class Form1 : Form
     {
-
-        public Main.ISQLCommander SQLCommander = new Main.Sqlite_Commander();
+        public Main.ISQLCommander SQLCommander;
+        public ChooseSql chooseSql;
 
         private frm.FrmMain frmMain;
 
@@ -16,8 +16,8 @@ namespace ExConPram
         {
             DataGridViewMain.Rows.Clear();
 
-            string sqlStr= "ID > 0 LIMIT 200";
-            if (CBox1.Checked) sqlStr = "ID > 0 AND Status ='1' LIMIT 200";
+            string sqlStr= "ID > -1 ";
+            if (CBox1.Checked) sqlStr = "ID > -1 AND Status ='1' ";
 
             var ls = SQLCommander.CollectionList<DataBase.GoodsClass>(sqlStr);
 
@@ -38,18 +38,9 @@ namespace ExConPram
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            SQLCommander.Connect();
-            if (SQLCommander.ConnectIs == false) { 
-                MessageBox.Show("No database connection !");
-                return;
-            }
-            //создаем таблици если их нет
-            SQLCommander.CreateTabel<DataBase.GoodsClass>();
-            SQLCommander.CreateTabel<DataBase.GoodsClass.CarBrandClass>();
-            SQLCommander.CreateTabel<DataBase.GoodsClass.GrupClass>();
-            SQLCommander.CreateTabel<DataBase.GoodsClass.ModificationClass>();
-
-            Refreh_DataGridViewMain();
+            chooseSql = new ChooseSql();
+            this.Enabled = false;            
+            chooseSql.Show();            
         }
 
         private void ADD_button1_Click(object sender, EventArgs e)

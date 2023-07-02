@@ -16,7 +16,7 @@ namespace ExConPram.DataBase
         /// <summary>
         /// ID в базе данных. -1 не в бд будет созданно ид когда эта строка будет внесена в бд            
         /// </summary>
-        [SqlReq("INTEGER", "primary key AUTOINCREMENT")]
+        [SqlReq("KEY_ID", "")]
         public int ID { get { return IDField; } }
         /// <summary>
         /// Помечено на удаление или не актуально
@@ -39,8 +39,13 @@ namespace ExConPram.DataBase
                 if (item.Value is SqlReq)               // из несколькоих атрибутов нужен только SqlReq 
                 {
                     var Req = item.Value as SqlReq;
-                    string Datatype = item.Value.Type_Param != "" ? item.Value.Type_Param : SQLCommander.TypeSQL(this.GetType().GetProperty(item.Key));
-                    str += $"[{item.Key}] {Datatype} " + Req.Parametor.ToUpper() + ", ";
+                    string Datatype = string.Empty;
+
+                    if (item.Value.Type_Param == "KEY_ID") { Datatype = SQLCommander.TypeSQL("KEY_ID",Req); }
+                    else if (item.Value.Type_Param != "") { Datatype = SQLCommander.TypeSQL(item.Value.Type_Param, Req);  }
+                    else { Datatype = SQLCommander.TypeSQL(this.GetType().GetProperty(item.Key).PropertyType.Name, Req); }
+
+                    str += $"[{item.Key}] {Datatype} , ";                     
                 }
                 else if (item.Value is SqlReqObj)       // для класса или структуры
                 {
@@ -164,7 +169,7 @@ namespace ExConPram.DataBase
 
             foreach (var item in SQL_Elements(this)) //строка для сравнения
             {
-                ls.Add(item.Key + SQLCommander.TypeSQL(this.GetType().GetProperty(item.Key)));
+                ls.Add(item.Key + SQLCommander.TypeSQL(this.GetType().GetProperty(item.Key).PropertyType.Name, null));
             }
 
             foreach (var item in SQLCommander.GetNames(TabelName))

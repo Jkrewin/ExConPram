@@ -23,8 +23,14 @@ namespace ExConPram.DataBase
     /// </summary>
     [System.AttributeUsage(System.AttributeTargets.Property)]
     public class SqlReq : System.Attribute, ISqlField
-    {               
+    {
+        /// <summary>
+        /// Тип данных указанный вручную, он будет преобразован через <b>ISQLCommander.TypeSQL</b>
+        /// </summary>
         public string Type_Param { get;  }
+        /// <summary>
+        /// Тут параметры для типа указывать () обзазательно если требует синтаксис
+        /// </summary>
         public string Parametor { get;  }
 
         public int MaxValue = -1;

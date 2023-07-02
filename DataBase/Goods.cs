@@ -6,7 +6,7 @@ namespace ExConPram.DataBase
     /// </summary>
     public class GoodsClass : ClassDBParam
     {
-        [SqlReq()]
+        [SqlReq("string", "(10)")]
         public StatusEnum Status { get; set; } = StatusEnum.Продаеться;
         [SqlReq(0, 50)]
         public string Сountry { get; set; }
@@ -14,7 +14,7 @@ namespace ExConPram.DataBase
         public decimal Price { get; set; }
         [SqlReq(1,3)]
         public decimal MarkupSng { get; set; }
-        [SqlReq()]
+        [SqlReq("string", "(200)")]
         public string Comment { get; set; }
 
         [SqlReqObj]
@@ -26,9 +26,9 @@ namespace ExConPram.DataBase
 
         public class GrupClass : ClassDBParam
         {
-            [SqlReq()]
+            [SqlReq("string", "(200)")]
             public string TypeCar { get; set; }           
-            [SqlReq()]
+            [SqlReq("string", "(80)")]
             public System.Drawing.Color ColorField { get; set; } = System.Drawing.Color.White ;           
         }
        
@@ -48,7 +48,7 @@ namespace ExConPram.DataBase
             [SqlReq(4, 4)]
             public short GenerationYear { get; set; } = 0;
         }
-
+       
         public class ModificationClass : ClassDBParam
         {
             [SqlReq(0, 40)]

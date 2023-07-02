@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace ExConPram.Main
 {
@@ -9,6 +8,10 @@ namespace ExConPram.Main
     /// </summary>
     public interface ISQLCommander
     {
+        /// <summary>
+        /// Тип подключения к данных
+        /// </summary>
+        public TypeSqlConnection SqlType { get; }
         /// <summary>
         /// Проверяет подключена база данных или нет    
         /// </summary>
@@ -51,8 +54,9 @@ namespace ExConPram.Main
         /// Приведение типов к типам в Datatypes базе данных
         /// </summary>
         /// <param name="info">System.Reflection.PropertyInfo</param>
+        /// /// <param name="sqlReq">Атрибуты  </param>
         /// <returns>Datatypes текущей БД</returns>
-        public string TypeSQL(System.Reflection.PropertyInfo info);
+        public string TypeSQL(string str, DataBase.SqlReq sqlReq);
         /// <summary>
         /// Получает заголовки таблици название и тип данных Datatype
         /// </summary>
@@ -85,5 +89,20 @@ namespace ExConPram.Main
         /// <param name="where">Необязателен. Можно составить запрос после WHERE с поиском строк </param>
         /// <returns>Получает список объектов совместимых с ClassDBParam</returns>
         public List<object[]> AdapterSql(string tabelName, string where = "");
+
+        /// <summary>
+        /// Указывает какой тип подключения сейчас
+        /// </summary>
+        public enum TypeSqlConnection
+        {
+            /// <summary>
+            /// <b>NuGet</b> >> Microsoft.Data.SqlClient
+            /// </summary>
+            MSSQL,
+            /// <summary>
+            /// <b>NuGet</b> >> System.Data.SQLite.Core 
+            /// </summary>
+            Sqlite
+        }
     }
 }

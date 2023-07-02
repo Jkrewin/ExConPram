@@ -201,7 +201,7 @@ namespace ExConPram.frm
             var cs = new DataBase.GoodsClass.CarBrandClass();
             var m = (WorkForm.DeliveredClass)MachineBrandBox.SelectedItem;
             if (m == null) return;
-            cs.GetDate(m.Id, Program.MainForm.SQLCommander);
+            cs.GetDate(int.Parse (m.Id), Program.MainForm.SQLCommander);
             MachineBrandBox.Tag = cs;
         }
         private void ModificationBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -209,7 +209,7 @@ namespace ExConPram.frm
             var mc = new DataBase.GoodsClass.ModificationClass();
             var m = (WorkForm.DeliveredClass)ModificationBox.SelectedItem;
             if (m == null) return;
-            mc.GetDate(m.Id, Program.MainForm.SQLCommander);
+            mc.GetDate(int.Parse (m.Id), Program.MainForm.SQLCommander);
             ModificationBox.Tag = mc;
         }
         private void GrupClassBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -217,7 +217,7 @@ namespace ExConPram.frm
             var gc = new DataBase.GoodsClass.GrupClass();
             var m = (WorkForm.DeliveredClass)GrupClassBox.SelectedItem;
             if (m == null) return;
-            gc.GetDate(m.Id, Program.MainForm.SQLCommander);
+            gc.GetDate(int.Parse (m.Id), Program.MainForm.SQLCommander);
             GrupClassBox.Tag = gc;
         }
 

@@ -163,7 +163,7 @@ namespace ExConPram.frm
             {
                 delivereds[i] = new DeliveredClass()
                 {
-                    Id = (int)(long)item[id_index],
+                    Id = item[id_index].ToString(),
                     Name = (string)item[nameCol_index],
                     TabelName = tabelName
                 };
@@ -329,7 +329,7 @@ namespace ExConPram.frm
         public class DeliveredClass
         {
             public string Name { get; set; }
-            public int Id { get; set; }
+            public string Id { get; set; }
             public string TabelName { get; set; }
         }
     }

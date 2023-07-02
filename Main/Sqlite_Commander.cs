@@ -8,12 +8,13 @@ namespace ExConPram.Main
     /// <summary>
     /// Соеденение с Sqlite
     /// </summary>
-    /// <remarks>Тестировался на NuGet >> System.Data.SQLite.Core 1.0.118</remarks>
+    /// <remarks>Тестировался на NuGet >> System.Data.SQLite.Core 1.0.118</remarks>    
     public class Sqlite_Commander : ISQLCommander
     {
         private bool ConnectIsField = false;
         private SQLiteConnection SQLite;
 
+        public ISQLCommander.TypeSqlConnection SqlType { get; } = ISQLCommander.TypeSqlConnection.Sqlite;
         /// <summary>
         /// Локальное размещение базы данных
         /// </summary>
@@ -49,6 +50,7 @@ namespace ExConPram.Main
 
         public List<object[]> AdapterSql(string tabelName, string where = "")
         {
+            if (ConnectIs == false) { throw new Exception("No database connection [" + System.Reflection.MethodBase.GetCurrentMethod().Name + "]"); }
             List<object[]> ls = new List<object[]>();
             string pol;
             if (where != "")
@@ -76,6 +78,7 @@ namespace ExConPram.Main
         }
         public List<T> CollectionList<T>(string WHERE_sql)
         {
+            if (ConnectIs == false) { throw new Exception("No database connection [" + System.Reflection.MethodBase.GetCurrentMethod().Name + "]"); }
             List<T> ls = new List<T>();
             Type genericType = typeof(T);
 
@@ -94,6 +97,7 @@ namespace ExConPram.Main
         }
         public Dictionary<string, string> GetNames(string TabelName)
         {
+            if (ConnectIs == false) { throw new Exception("No database connection [" + System.Reflection.MethodBase.GetCurrentMethod().Name + "]"); }
             SQLiteCommand command = new SQLiteCommand("SELECT * FROM '" + TabelName + "' LIMIT 1", SQLite);
             SQLiteDataReader sqReader = command.ExecuteReader();
             Dictionary<string, string> dic = new Dictionary<string, string>();
@@ -149,8 +153,8 @@ namespace ExConPram.Main
             bool d = sqReader.HasRows;
             sqReader.Close();
             return d;
-        }       
-        public string TypeSQL(System.Reflection.PropertyInfo info) => info.PropertyType.Name switch
+        }
+        public string TypeSQL(string info, DataBase.SqlReq sqlReq) => info switch
         {
             "Decimal" => "NUMERIC",
             "Int16" => "INTEGER",
@@ -158,6 +162,7 @@ namespace ExConPram.Main
             "Short" => "INTEGER",
             "Fload" => "REAL",
             "Double" => "REAL",
+            "KEY_ID" => "primary key AUTOINCREMENT",
             _ => "TEXT"
         };
                
