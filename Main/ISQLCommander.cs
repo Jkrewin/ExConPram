@@ -102,7 +102,11 @@ namespace ExConPram.Main
             /// <summary>
             /// <b>NuGet</b> >> System.Data.SQLite.Core 
             /// </summary>
-            Sqlite
+            Sqlite,
+            /// <summary>
+            ///  NuGet >> MySql.Data 8.0.33
+            /// </summary>
+            MySQL
         }
     }
 }

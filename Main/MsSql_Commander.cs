@@ -174,7 +174,7 @@ namespace ExConPram.Main
             {
                 SqlCommand command = MSSQL.CreateCommand();
                 command.CommandText = sql;
-                return command.ExecuteNonQuery();
+                return command.ExecuteNonQuery();                
             }
             catch (Exception Ex)
             {

@@ -11,7 +11,7 @@ namespace ExConPram.DataBase
     public abstract class ClassDBParam
     {
         public string TabelName { get => this.GetType().Name; }
-        private int IDField = -1;
+        private int IDField = -1;    
 
         /// <summary>
         /// ID в базе данных. -1 не в бд будет созданно ид когда эта строка будет внесена в бд            
@@ -30,10 +30,13 @@ namespace ExConPram.DataBase
         /// <remarks>Есть проверка на существование таблици, если существует то запроса не будет</remarks>
         public void CreateTabel(Main.ISQLCommander SQLCommander)
         {
+            char quotL = QuotSql(SQLCommander)[0];
+            char quotR = QuotSql(SQLCommander)[1];
+
             // Существует такая БД или нет 
             if (SQLCommander.CheckExistTabel(TabelName)) return;
 
-            string str = "CREATE TABLE [" + TabelName + "] (";
+            string str = "CREATE TABLE "+ quotL + TabelName + quotR + " (";
             foreach (var item in SQL_Elements(this))
             {
                 if (item.Value is SqlReq)               // из несколькоих атрибутов нужен только SqlReq 
@@ -45,11 +48,11 @@ namespace ExConPram.DataBase
                     else if (item.Value.Type_Param != "") { Datatype = SQLCommander.TypeSQL(item.Value.Type_Param, Req);  }
                     else { Datatype = SQLCommander.TypeSQL(this.GetType().GetProperty(item.Key).PropertyType.Name, Req); }
 
-                    str += $"[{item.Key}] {Datatype} , ";                     
+                    str += $"{quotL}{item.Key}{quotR} {Datatype} , ";                     
                 }
                 else if (item.Value is SqlReqObj)       // для класса или структуры
                 {
-                    str += $"[{item.Key}] INT DEFAULT(-1), ";
+                    str += $"{quotL}{item.Key}{quotR} INT DEFAULT(-1), ";
                 }
             }
             str = str[0..^2] + ") ";
@@ -60,6 +63,9 @@ namespace ExConPram.DataBase
         /// </summary>
         public void Update(Main.ISQLCommander SQLCommander)
         {
+            char quotL = QuotSql(SQLCommander)[0];
+            char quotR = QuotSql(SQLCommander)[1];
+
             Dictionary<string, ISqlField> dic = SQL_Elements(this);
             dic.Remove("ID");           //Так как автоматическая строка
 
@@ -70,7 +76,7 @@ namespace ExConPram.DataBase
 
                 foreach (var item in dic)
                 {
-                    str += "[" + item.Key + "], ";
+                    str += quotL + item.Key + quotR + ", ";
                     System.Reflection.PropertyInfo refl = this.GetType().GetProperty(item.Key);
                     if (item.Value is SqlReq)
                     {
@@ -88,7 +94,7 @@ namespace ExConPram.DataBase
                 str = str[0..^2];
                 values = values[0..^2];
 
-                IDField = SQLCommander.SqlCommand($"INSERT INTO  [{TabelName}] ({str}) VALUES ({values})");
+                IDField = SQLCommander.SqlCommand($"INSERT INTO  {quotL}{TabelName}{quotR} ({str}) VALUES ({values})");
             }
             // изменение строки 
             else
@@ -99,19 +105,19 @@ namespace ExConPram.DataBase
                     System.Reflection.PropertyInfo refl = this.GetType().GetProperty(item.Key);
                     if (item.Value is SqlReq)
                     {
-                        unityValue += "[" + item.Key + "]='" + CastType(refl.GetValue(this), refl) + "', ";
+                        unityValue += quotL + item.Key + quotR + "='" + CastType(refl.GetValue(this), refl) + "', ";
                     }
                     else            // Если это класс
                     {
                         //сначало проверми есть в этом классе ID некоторые классы не сохраняються в БД без ID                                                                    
                         var classDB = (ClassDBParam)refl.GetValue(this);
-                        if (classDB != null) { unityValue += $"[{item.Key}]='{classDB.ID}', "; }
-                        else { unityValue += $"[{item.Key}]='', "; }
+                        if (classDB != null) { unityValue += $"{quotL}{item.Key}{quotR}='{classDB.ID}', "; }
+                        else { unityValue += $"{quotL}{item.Key}quotR='', "; }
                     }
                 }
 
                 unityValue = unityValue[0..^2];
-                SQLCommander.SqlCommand($"UPDATE [{TabelName}] SET {unityValue} WHERE ID = {ID}");
+                SQLCommander.SqlCommand($"UPDATE {quotL}{TabelName}{quotR} SET {unityValue} WHERE ID = {ID}");
             }
         }
         /// <summary>
@@ -220,11 +226,33 @@ namespace ExConPram.DataBase
             if (obj == null) return value;
 
             if (obj.GetType().IsEnum) { value = ((int)obj).ToString(); }
+            else if (info.PropertyType.Name == "Boolean") { value = obj.ToString() == "True" ? "1" : "0";  }
             else if (info.PropertyType.Name == "Color") { value = ((System.Drawing.Color)obj).Name; }
             else { value = obj.ToString(); }
             value.Replace("'", @"\'");
 
             return value;
+        }
+        /// <summary>
+        /// Некоторые типы баз данных имеют разные brackets
+        /// </summary>
+        /// <param name="SQLCommande">Соеденение с базой</param>
+        /// <returns>Mасcив состоящий из символа левой части 0 и правой части 1</returns>
+        /// <remarks>По умолчанию это []</remarks>
+        private char[] QuotSql(Main.ISQLCommander SQLCommande) {
+            char[] vs = new char[2];
+            switch (SQLCommande.SqlType )
+            {
+                case Main.ISQLCommander.TypeSqlConnection.MySQL:
+                    vs[0] = '`';
+                    vs[1] = '`';
+                    break;
+                default:
+                    vs[0] = '[';
+                    vs[1] = ']';
+                    break;
+            }
+            return vs;
         }
     }
 }

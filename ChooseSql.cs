@@ -17,6 +17,7 @@ namespace ExConPram
         private string SetFile { get; } = AppContext.BaseDirectory + "SetFile.dat";
         private readonly Main.Sqlite_Commander sqlite = new Main.Sqlite_Commander();
         private readonly Main.MsSql_Commander ms = new Main.MsSql_Commander();
+        private readonly Main.MySql_Commander my = new Main.MySql_Commander();
 
 
         [Serializable]
@@ -89,6 +90,8 @@ namespace ExConPram
                     if (item.CanWrite) connectionSettings.Set_dic.Add(item.Name, item.GetValue(sqlite).ToString());
                 foreach (var item in ms.GetType().GetProperties())
                     if (item.CanWrite) connectionSettings.Set_dic.Add(item.Name, item.GetValue(ms).ToString());
+                foreach (var item in my.GetType().GetProperties())
+                    if (item.CanWrite) connectionSettings.Set_dic.Add(item.Name, item.GetValue(my).ToString());
             }
             else
             {
@@ -120,6 +123,16 @@ namespace ExConPram
         }
         private void TabControl1_SelectedIndexChanged(object sender, EventArgs e) => connectionSettings.SelectTab = TabControl1.SelectedIndex;
 
+        private void Button1_Click(object sender, EventArgs e)
+        {
+            my.Database_Mysql = Database_Mysql.Text;
+            my.Password_Mysql = Password_Mysql.Text;
+            my.UserId_Mysql = UserId_Mysql.Text;
+            my.Server_IP_Mysql = Server_IP_Mysql.Text;
+            Program.MainForm.SQLCommander = my;
+            SqlRun();            
+        }
 
+        private void CheckBox2_CheckedChanged(object sender, EventArgs e) => Password_Mysql.PasswordChar = checkBox2.Checked == true ? '0' : '*';
     }
 }
